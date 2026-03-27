@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, timeout } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 
 export interface Post {
-  id: number;
+  id: string;
   title: string;
   content: string;
   author: string;
@@ -16,18 +16,26 @@ export interface Post {
   providedIn: 'root'
 })
 export class PostService {
-  private apiUrl = `${environment.apiUrl}/posts`;
+  private apiUrl = `${environment.apiUrl}/v1/posts`;
 
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<Post[]> {
     return this.http.get<Post[]>(this.apiUrl)
       .pipe(
+        timeout(10000),
         catchError(this.handleError<Post[]>('getAll', []))
       );
   }
 
-  getPost(id: number): Observable<Post> {
+  getTestPosts(): Observable<Post[]> {
+    const mockPosts: Post[] = [
+      { id: '1', title: 'Post de Test (Mode Forcé)', content: 'Le frontend est bien connecté, mais le backend ne renvoie rien.', author: 'Admin', createdAt: new Date().toISOString() }
+    ];
+    return of(mockPosts);
+  }
+
+  getPost(id: string): Observable<Post> {
     return this.http.get<Post>(`${this.apiUrl}/${id}`)
       .pipe(
         catchError(this.handleError<Post>(`getPost id=${id}`))
@@ -57,7 +65,10 @@ export class PostService {
 
   protected handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(`${operation} failed: ${error.message}`, error); // log to console
+      console.error(`[DEBUG_LOG] ${operation} failed:`, error);
+      if (error.status === 0) {
+        console.warn("[DEBUG_LOG] Le backend est inaccessible (éteint ou problème de CORS)");
+      }
       return of(result as T);
     };
   }
