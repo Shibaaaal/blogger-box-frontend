@@ -12,6 +12,13 @@ export interface Post {
   createdAt: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export type CreatePostDto = Omit<Post, 'id'> & { categoryId?: string };
+
 @Injectable({
   providedIn: 'root'
 })
@@ -42,10 +49,18 @@ export class PostService {
       );
   }
 
-  create(post: Partial<Post>): Observable<Post> {
+  create(post: CreatePostDto): Observable<Post> {
     return this.http.post<Post>(this.apiUrl, post)
       .pipe(
         catchError(this.handleError<Post>('create'))
+      );
+  }
+
+  getCategories(): Observable<Category[]> {
+    return this.http.get<Category[]>(`${environment.apiUrl}/v1/categories`)
+      .pipe(
+        timeout(10000),
+        catchError(this.handleError<Category[]>('getCategories', []))
       );
   }
 
