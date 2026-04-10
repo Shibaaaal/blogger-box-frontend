@@ -16,8 +16,7 @@
             <h6 class="card-subtitle mb-2 text-muted small" *ngIf="post.createdAt">
               {{ post.createdAt | date: 'mediumDate' }}
             </h6>
-            <p class="card-text text-secondary">{{ (post.content | slice:0:150) + (post.content && post.content.length > 150 ? '...' : '') || 'No content available.' }}</p>
-            <a [routerLink]="['/post', post.id]" class="btn btn-primary btn-sm px-4">Read More</a>
+            <p class="card-text text-secondary" style="white-space: pre-wrap;">{{ post.content || 'No content available.' }}</p>
           </div>
         </div>
         <div *ngIf="posts.length === 0" class="alert alert-info text-center">

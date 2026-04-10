@@ -2,6 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PostService, Category } from '../PostService';
+import Swal from 'sweetalert2';
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+});
 
 @Component({
   selector: 'app-add-post',
@@ -34,7 +47,23 @@ export class AddPost implements OnInit {
   onSubmit() {
     if (this.postForm.valid) {
       this.postService.create(this.postForm.value).subscribe(() => {
-        this.router.navigate(['/']);
+        Toast.fire({
+          icon: 'success',
+          title: 'Post created successfully'
+        }).then(() => {
+          this.router.navigate(['/']);
+        });
+      });
+    } else {
+      Object.keys(this.postForm.controls).forEach(key => {
+        const control = this.postForm.get(key);
+        if (control) {
+          control.markAsTouched();
+        }
+      });
+      Toast.fire({
+        icon: 'error',
+        title: 'Please fix the errors in the form before submitting'
       });
     }
   }
