@@ -21,10 +21,9 @@ export class AddPost implements OnInit {
 
   ngOnInit() {
     this.postForm = this.fb.group({
-      title: ['', Validators.required],
-      content: ['', Validators.required],
-      author: ['', Validators.required],
-      categoryId: ['']
+      title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(150)]],
+      categoryId: ['', Validators.required],
+      content: ['', [Validators.required, Validators.maxLength(2500)]]
     });
 
     this.postService.getCategories().subscribe(cats => {

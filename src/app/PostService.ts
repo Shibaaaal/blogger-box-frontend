@@ -17,7 +17,7 @@ export interface Category {
   name: string;
 }
 
-export type CreatePostDto = Omit<Post, 'id'> & { categoryId?: string };
+export type CreatePostDto = Omit<Post, 'id' | 'author' | 'createdAt'> & { categoryId?: string };
 
 @Injectable({
   providedIn: 'root'

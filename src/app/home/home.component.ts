@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
         console.log('[DEBUG_LOG] HomeComponent: received NEXT:', posts);
         this.isLoading = false;
         if (posts && posts.length > 0) {
-          this.posts = posts;
+          this.posts = posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         } else {
           this.posts = [];
         }
